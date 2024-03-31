@@ -8,6 +8,9 @@ async def main(page: ft.Page):
     page.window_resizable = False
     page.padding = 0
 
+    def eventoVacio(e: ft.ContainerTapEvent):
+        print("Le pushooo!", e)
+
     botonAzul = ft.Stack(
         [ft.Container(width=80, height=80, bgcolor=ft.colors.WHITE, border_radius=50),
          ft.Container(width=70, height=70, left=5, top=5, bgcolor=ft.colors.BLUE, border_radius=50)]
@@ -32,7 +35,33 @@ async def main(page: ft.Page):
         )
     ])
 
-    itemInferior = [ft.Container(width=50, border=ft.border.all()),]
+    triangulo = ft.canvas.Canvas([
+        ft.canvas.Path([
+            ft.canvas.Path.MoveTo(40, 0),
+            ft.canvas.Path.LineTo(0, 50),
+            ft.canvas.Path.LineTo(80, 50)
+        ],
+            paint=ft.Paint(style=ft.PaintingStyle.FILL),
+        )
+    ],
+        height=50,
+        width=80)
+
+    flechas = ft.Column([
+        ft.Container(triangulo, width=80, height=50, on_click=eventoVacio),
+        # Convertir los grados que se quiere rotar en radiaes 180º = 3.14159 pi
+        ft.Container(triangulo, rotate=ft.Rotate(
+            angle=3.14159), width=80, height=50, on_click=eventoVacio)
+    ])
+
+
+# Continuar con el texto minuto 19:15
+
+    itemInferior = [ft.Container(width=50, ),
+                    ft.Container(width=400, height=300,
+                                 bgcolor=ft.colors.GREEN, border_radius=20),
+                    ft.Container(flechas, width=80, height=120),
+                    ft.Container(width=50)]
 
     superior = ft.Container(
         content=ft.Row(itemsSuperior),
@@ -43,7 +72,7 @@ async def main(page: ft.Page):
     centro = ft.Container(content=itemCentral, width=600, height=400,
                           margin=ft.margin.only(top=40), alignment=ft.alignment.center)
     inferior = ft.Container(
-        content=ft.Row(itemInferior), width=600, height=400, margin=ft.margin.only(top=40), border=ft.border.all()
+        content=ft.Row(itemInferior), width=600, height=400, margin=ft.margin.only(top=40)
     )
 
     col = ft.Column(spacing=0, controls=[superior, centro, inferior])
