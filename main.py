@@ -1,5 +1,8 @@
 import flet as ft
 import asyncio
+import aiohttp
+
+pokemonActual = 0
 
 
 async def main(page: ft.Page):
@@ -7,9 +10,48 @@ async def main(page: ft.Page):
     page.window_width = 720
     page.window_resizable = False
     page.padding = 0
+    page.fonts = {
+        "zpix": "https://github.com/SolidZORO/zpix-pixel-font/releases/download/v3.1.9/zpix.ttf"
+    }
+    page.theme = ft.Theme(font_family="zpix")
 
-    def eventoVacio(e: ft.ContainerTapEvent):
-        print("Le pushooo!", e)
+    async def getPokemon(url):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                return await response.json()
+
+    async def eventoVacio(e: ft.ContainerTapEvent):
+        global pokemonActual
+        if e.control == flechaSuperior:
+            pokemonActual += 1
+        else:
+            pokemonActual -= 1
+
+        numero = (pokemonActual % 1025) + 1
+        respuesta = await getPokemon(f"https://pokeapi.co/api/v2/pokemon/{numero}")
+        datos = f"Name: {respuesta['name']}\nAbilities:"
+        for i in respuesta['abilities']:
+            abiliity = i['ability']['name']
+            if i['is_hidden']:
+                datos += f"\n\t{abiliity} hidden"
+            else:
+                datos += f"\n\t{abiliity}"
+        datos += f"\nTypes: "
+
+        for i in respuesta['types']:
+            pokemonType = i['type']['name']
+            datos += f"\n\t {pokemonType}"
+
+        datos += f"\n Height: {respuesta['height']/10} mts."
+        datos += f"\n Weight: {respuesta['weight']/10} kg."
+
+        texto.value = datos
+
+        spritePokemon = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{
+            numero}.png"
+        image.src = spritePokemon
+
+        await page.update_async()
 
     botonAzul = ft.Stack(
         [ft.Container(width=80, height=80, bgcolor=ft.colors.WHITE, border_radius=50),
@@ -26,13 +68,17 @@ async def main(page: ft.Page):
                      bgcolor=ft.colors.GREEN, border_radius=50),
     ]
 
+    spritePokemon = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/0.png"
+
+    image = ft.Image(
+        src=spritePokemon, scale=10, width=30, height=30, top=350 / 2, right=550/2
+    )
+
     itemCentral = ft.Stack([
         ft.Container(width=600, height=400, bgcolor=ft.colors.WHITE),
         ft.Container(width=550, height=350,
                      bgcolor=ft.colors.BLACK, top=25, left=25),
-        ft.Image(
-            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/197.png", scale=10, width=50, height=50, top=350 / 2, right=550/2
-        )
+        image,
     ])
 
     triangulo = ft.canvas.Canvas([
@@ -47,8 +93,11 @@ async def main(page: ft.Page):
         height=50,
         width=80)
 
+    flechaSuperior = ft.Container(
+        triangulo, width=80, height=50, on_click=eventoVacio)
+
     flechas = ft.Column([
-        ft.Container(triangulo, width=80, height=50, on_click=eventoVacio),
+        flechaSuperior,
         # Convertir los grados que se quiere rotar en radiaes 180º = 3.14159 pi
         ft.Container(triangulo, rotate=ft.Rotate(
             angle=3.14159), width=80, height=50, on_click=eventoVacio)
@@ -57,8 +106,14 @@ async def main(page: ft.Page):
 
 # Continuar con el texto minuto 19:15
 
+    texto = ft.Text(
+        value="Aqui irá un texto descriptivo de un pokémon",
+        color=ft.colors.BLACK,
+        size=22
+    )
+
     itemInferior = [ft.Container(width=50, ),
-                    ft.Container(width=400, height=300,
+                    ft.Container(texto, width=400, height=300,
                                  bgcolor=ft.colors.GREEN, border_radius=20),
                     ft.Container(flechas, width=80, height=120),
                     ft.Container(width=50)]
