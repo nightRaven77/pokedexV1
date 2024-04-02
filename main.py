@@ -9,6 +9,7 @@ async def main(page: ft.Page):
     page.window_height = 1024
     page.window_width = 720
     page.window_resizable = False
+    page.window_top
     page.padding = 0
     page.fonts = {
         "zpix": "https://github.com/SolidZORO/zpix-pixel-font/releases/download/v3.1.9/zpix.ttf"
@@ -36,19 +37,18 @@ async def main(page: ft.Page):
 
     async def btnGetPokemon(e: ft.ContainerTapEvent):
         global pokemonActual
-        print("Antes: ", pokemonActual)
+
         if e.control == flechaSuperior:
             pokemonActual += 1
         else:
             pokemonActual -= 1
-        print("Despues", pokemonActual)
 
-        numero = (pokemonActual % 1025)
+        # numero = (pokemonActual % 1025) + 1
+        if (pokemonActual % 1025) <= 0:
+            numero = (pokemonActual % 1025) + 1
+        else:
+            numero = (pokemonActual % 1025)
 
-        if numero == 0:
-            numero += 1
-
-        print("Numero", numero)
         respuesta = await getPokemon(f"https://pokeapi.co/api/v2/pokemon/{numero}")
         datos = f"Name: {respuesta['name']}\nAbilities:"
         for i in respuesta['abilities']:
