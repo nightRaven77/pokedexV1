@@ -1,192 +1,152 @@
-# import flet as ft
-# import asyncio
-# import aiohttp
-#
-# pokemonActual = 0
-#
-#
-# async def main(page: ft.Page):
-#     page.window_height = 1024
-#     page.window_width = 720
-#     page.window_resizable = False
-#     page.window_top
-#     page.padding = 0
-#     page.fonts = {
-#         "zpix": "https://github.com/SolidZORO/zpix-pixel-font/releases/download/v3.1.9/zpix.ttf"
-#     }
-#     page.theme = ft.Theme(font_family="zpix")
-#
-#     async def stwSprite(e):
-#         global pokemonActual
-#
-#         numero = (pokemonActual % 1025) + 1
-#         if c1.value == True:
-#             spritePokemon = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/{
-#                 numero}.png"
-#         else:
-#             spritePokemon = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{
-#                 numero}.png"
-#         image.src = spritePokemon
-#
-#         await page.update_async()
-#
-#     async def getPokemon(url):
-#         async with aiohttp.ClientSession() as session:
-#             async with session.get(url) as response:
-#                 return await response.json()
-#
-#     async def btnGetPokemon(e: ft.ContainerTapEvent):
-#         global pokemonActual
-#
-#         if e.control == flechaSuperior:
-#             pokemonActual += 1
-#         else:
-#             pokemonActual -= 1
-#
-#         # numero = (pokemonActual % 1025) + 1
-#         if (pokemonActual % 1025) <= 0:
-#             numero = (pokemonActual % 1025) + 1
-#         else:
-#             numero = (pokemonActual % 1025)
-#
-#         respuesta = await getPokemon(f"https://pokeapi.co/api/v2/pokemon/{numero}")
-#         datos = f"Name: {respuesta['name']}\nAbilities:"
-#         for i in respuesta['abilities']:
-#             abiliity = i['ability']['name']
-#             if i['is_hidden']:
-#                 datos += f"\n\t{abiliity} - hidden"
-#             else:
-#                 datos += f"\n\t{abiliity}"
-#         datos += f"\nTypes: "
-#
-#         for i in respuesta['types']:
-#             pokemonType = i['type']['name']
-#             datos += f"\n\t {pokemonType}"
-#
-#         datos += f"\nHeight: {respuesta['height']/10} mts."
-#         datos += f"\nWeight: {respuesta['weight']/10} kg."
-#
-#         texto.value = datos
-#
-#         if c1.value == True:
-#             spritePokemon = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/{
-#                 numero}.png"
-#         else:
-#             spritePokemon = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{
-#                 numero}.png"
-#         image.src = spritePokemon
-#
-#         await page.update_async()
-#
-#     async def blink():
-#         while True:
-#             await asyncio.sleep(1)
-#             parpdeo.bgcolor = ft.colors.BLUE_100
-#             await page.update_async()
-#             await asyncio.sleep(0.1)
-#             parpdeo.bgcolor = ft.colors.BLUE
-#             await page.update_async()
-#
-#     parpdeo = ft.Container(width=70, height=70, left=5,
-#                            top=5, bgcolor=ft.colors.BLUE, border_radius=50)
-#
-#     botonAzul = ft.Stack(
-#         [ft.Container(width=80, height=80, bgcolor=ft.colors.WHITE, border_radius=50),
-#          parpdeo
-#          ]
-#     )
-#
-#     c1 = ft.Switch(label="Shiny", value=False, on_change=stwSprite)
-#
-#     itemsSuperior = [
-#         ft.Container(botonAzul, width=80, height=80),
-#         ft.Container(width=40, height=40,
-#                      bgcolor=ft.colors.RED_200, border_radius=50),
-#         ft.Container(width=40, height=40,
-#                      bgcolor=ft.colors.YELLOW, border_radius=50),
-#         ft.Container(width=40, height=40,
-#                      bgcolor=ft.colors.GREEN, border_radius=50),
-#         ft.Container(c1, width=40, height=60,
-#                      alignment=ft.alignment.center_right),
-#     ]
-#
-#     spritePokemon = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png"
-#
-#     image = ft.Image(
-#         src=spritePokemon, scale=10, width=30, height=30, top=350 / 2, right=550/2
-#     )
-#
-#     itemCentral = ft.Stack([
-#         ft.Container(width=600, height=400,
-#                      bgcolor=ft.colors.WHITE, border_radius=30),
-#         ft.Container(width=550, height=350,
-#                      bgcolor=ft.colors.BLACK, top=25, left=25, border_radius=30),
-#         image,
-#     ])
-#
-#     triangulo = ft.canvas.Canvas([
-#         ft.canvas.Path([
-#             ft.canvas.Path.MoveTo(40, 0),
-#             ft.canvas.Path.LineTo(0, 50),
-#             ft.canvas.Path.LineTo(80, 50)
-#         ],
-#             paint=ft.Paint(style=ft.PaintingStyle.FILL),
-#         )
-#     ],
-#         height=50,
-#         width=80)
-#
-#     flechaSuperior = ft.Container(
-#         triangulo, width=80, height=50, on_click=btnGetPokemon)
-#
-#     flechas = ft.Column([
-#         flechaSuperior,
-#         # Convertir los grados que se quiere rotar en radiaes 180º = 3.14159 pi
-#         ft.Container(triangulo, rotate=ft.Rotate(
-#             angle=3.14159), width=80, height=50, on_click=btnGetPokemon)
-#     ])
-#
-#
-# # Continuar con el texto minuto 19:15
-#
-#     texto = ft.Text(
-#         value="Not Found!",
-#         color=ft.colors.BLACK,
-#         size=22,
-#     )
-#
-#     itemInferior = [ft.Container(width=50, ),  # Margen Izquierdo
-#                     ft.Container(texto, padding=20, width=400, height=370,
-#                                  bgcolor=ft.colors.GREEN, border_radius=20),
-#                     ft.Container(width=30),  # Margen Derecho
-#                     ft.Container(flechas, width=80, height=120),
-#                     ]
-#
-#     superior = ft.Container(
-#         content=ft.Row(itemsSuperior),
-#         width=600,
-#         height=80,
-#         margin=ft.margin.only(top=40),
-#     )
-#     centro = ft.Container(content=itemCentral, width=600, height=400,
-#                           margin=ft.margin.only(top=40), alignment=ft.alignment.center)
-#     inferior = ft.Container(
-#         content=ft.Row(itemInferior), width=600, height=400, margin=ft.margin.only(top=40)
-#     )
-#
-#     col = ft.Column(spacing=0, controls=[superior, centro, inferior])
-#
-#     container = ft.Container(
-#         col,
-#         width=720,
-#         height=1280,
-#         bgcolor=ft.colors.RED,
-#         alignment=ft.alignment.top_center,
-#     )
-#     await page.add_async(container)
-#     await blink()
-#
-#
+import flet as ft
+import requests
 
 
+def main(page: ft.Page):
+    page.title = "Pokédex Flet"
+    page.theme_mode = ft.ThemeMode.LIGHT
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.padding = 20
 
+    # Variables para almacenar datos del Pokémon
+    pokemon_name = ft.Text("Bulbasaur", size=28, weight=ft.FontWeight.BOLD)
+    pokemon_id = ft.Text("#001", size=20)
+    pokemon_types = ft.Row(alignment=ft.MainAxisAlignment.CENTER)
+    pokemon_image = ft.Image(
+        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+        width=200,
+        height=200,
+    )
+    pokemon_stats = ft.Column()
+
+    # Función para buscar Pokémon
+    def search_pokemon(e):
+        query = search_field.value.lower().strip()
+        if query:
+            try:
+                response = requests.get(f"https://pokeapi.co/api/v2/pokemon/{query}")
+                if response.status_code == 200:
+                    data = response.json()
+
+                    # Actualizar datos del Pokémon
+                    pokemon_name.value = data["name"].capitalize()
+                    pokemon_id.value = f"#{data['id']}"
+                    pokemon_image.src = data["sprites"]["other"]["official-artwork"]["front_default"]
+
+                    # Actualizar tipos
+                    pokemon_types.controls.clear()
+                    for type_data in data["types"]:
+                        pokemon_types.controls.append(
+                            ft.Container(
+                                content=ft.Text(
+                                    type_data["type"]["name"].capitalize(),
+                                    color="white",
+                                    weight=ft.FontWeight.BOLD,
+                                ),
+                                padding=10,
+                                border_radius=10,
+                                bgcolor=get_type_color(type_data["type"]["name"]),
+                                margin=5,
+                            )
+
+                        # Actualizar estadísticas
+                        pokemon_stats.controls.clear()
+                        for stat in data["stats"]:
+                            pokemon_stats.controls.append(
+                                ft.Row(
+                                    controls=[
+                                        ft.Text(stat["stat"]["name"].replace("-", " ").capitalize(), width=100),
+                                        ft.Text(stat["base_stat"], weight=ft.FontWeight.BOLD),
+                                        ft.ProgressBar(value=stat["base_stat"] / 200, width=200),
+                                    ],
+                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                )
+                            )
+
+                        page.update()
+                        else:
+                        page.snack_bar = ft.SnackBar(ft.Text("¡Pokémon no encontrado!"), open=True)
+                        page.update()
+            except Exception as ex:
+                page.snack_bar = ft.SnackBar(ft.Text(f"Error: {ex}"), open=True)
+                page.update()
+
+    # Función para obtener el color según el tipo de Pokémon
+    def get_type_color(pokemon_type):
+        colors = {
+            "normal": "#A8A878",
+            "fire": "#F08030",
+            "water": "#6890F0",
+            "electric": "#F8D030",
+            "grass": "#78C850",
+            "ice": "#98D8D8",
+            "fighting": "#C03028",
+            "poison": "#A040A0",
+            "ground": "#E0C068",
+            "flying": "#A890F0",
+            "psychic": "#F85888",
+            "bug": "#A8B820",
+            "rock": "#B8A038",
+            "ghost": "#705898",
+            "dragon": "#7038F8",
+            "dark": "#705848",
+            "steel": "#B8B8D0",
+            "fairy": "#EE99AC",
+        }
+        return colors.get(pokemon_type, "#777777")  # Color por defecto
+
+    # Barra de búsqueda
+    search_field = ft.TextField(
+        label="Nombre o ID del Pokémon",
+        hint_text="Ej: Pikachu o 25",
+        width=300,
+        border_radius=20,
+        autofocus=True,
+        on_submit=search_pokemon,
+    )
+    search_button = ft.ElevatedButton(
+        text="Buscar",
+        icon=ft.icons.SEARCH,
+        on_click=search_pokemon,
+    )
+
+    # Diseño principal
+    page.add(
+        ft.Column(
+            controls=[
+                ft.Row(
+                    controls=[search_field, search_button],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                ft.Card(
+                    content=ft.Container(
+                        content=ft.Column(
+                            controls=[
+                                ft.Row(
+                                    controls=[pokemon_id, pokemon_name],
+                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                ),
+                                pokemon_image,
+                                pokemon_types,
+                                ft.Divider(),
+                                ft.Text("Estadísticas", size=20, weight=ft.FontWeight.BOLD),
+                                pokemon_stats,
+                            ],
+                            spacing=10,
+                            alignment=ft.MainAxisAlignment.CENTER,
+                        ),
+                        padding=20,
+                    ),
+                    elevation=10,
+                    width=400,
+                ),
+            ],
+            spacing=20,
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+    )
+
+
+# Ejecutar la app
+ft.app(target=main)
