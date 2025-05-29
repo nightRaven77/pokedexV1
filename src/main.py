@@ -10,22 +10,33 @@ def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.padding = 20
     page.window.width = 450
+    page.window.height = 900
+    page.fonts = {
+        "zpix": "https://github.com/SolidZORO/zpix-pixel-font/releases/download/v3.1.9/zpix.ttf"
+    }
+    page.theme = ft.Theme(font_family="zpix")
 
     # Variables para almacenar datos del Pokémon
     pokemon_name = ft.Text("Bulbasaur", size=28, weight=ft.FontWeight.BOLD)
     pokemon_id = ft.Text("#001", size=20)
     pokemon_types = ft.Row (alignment=ft.MainAxisAlignment.CENTER)
     pokemon_image = ft.Image(
-        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png",
         width=200,
         height=200,
     )
     pokemon_stats = ft.Column()
 
+    def get_sprite():
+        sprite = "front_default"
+        if switch_sprite.value == True:
+            sprite = "front_shiny"
+        return sprite
+
     # Función para buscar Pokémon
     def search_pokemon(e):
         query = search_field.value.lower().strip()
-        print(query)
+
         if query:
             try:
                 response = requests.get(f"https://pokeapi.co/api/v2/pokemon/{query}")
@@ -34,14 +45,11 @@ def main(page: ft.Page):
                     # Actualizar los datos
                     pokemon_name.value = data["name"].capitalize()
                     pokemon_id.value = f"#{data["id"]}"
-                    if
-
-                    pokemon_image.src = data["sprites"]["other"]["official-artwork"][f"{sprite}"]
+                    pokemon_image.src = data["sprites"]["other"]["official-artwork"][f"{get_sprite()}"]
 
                     # se actualizan los tipos
                     pokemon_types.controls.clear()
                     for type_data in data["types"]:
-                        print(type_data["type"]["name"].capitalize())
                         pokemon_types.controls.append(
                             ft.Container(
                                 content=ft.Text(
@@ -101,6 +109,7 @@ def main(page: ft.Page):
         }
         return colors.get(pokemon_type, "#777777")  # Color por defecto
 
+
     # Barra de búsqueda
     search_field = ft.TextField(
         label="Nombre o ID del Pokémon",
@@ -117,7 +126,8 @@ def main(page: ft.Page):
     )
     switch_sprite = ft.Switch(
         label="Shiny",
-        value=False
+        value=False,
+        on_change=search_pokemon,
     )
 
     # Diseño principal
